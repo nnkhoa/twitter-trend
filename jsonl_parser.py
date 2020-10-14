@@ -19,9 +19,3 @@ def load_jsonl(input_file) -> list:
     # remove unwanted keys and return the list
     return [{k: record[k] for k in set(wanted_keys) & set(record.keys())} for record in data]
 
-def main():
-    data = load_jsonl('G:\Gestion Action\GERANT\Khoa\data\Twitter\\107530150c943610b908a4c82168133d.jsonl')
-    print(len(data))
-    
-if __name__ == '__main__':
-    main()
