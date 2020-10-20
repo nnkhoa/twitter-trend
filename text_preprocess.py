@@ -4,6 +4,8 @@ from nltk import word_tokenize
 from nltk.corpus import stopwords
 from nltk.stem.porter import PorterStemmer
 
+from sacremoses import MosesTokenizer
+
 def text_preprocessing(text):
     # lowercasing
     text = text.lower()
@@ -22,3 +24,11 @@ def text_preprocessing(text):
     stemmed = [porter.stem(token) for token in filtered_token]
 
     return stemmed
+
+
+def tokenize_text(text):
+    mt = MosesTokenizer(lang='en')
+
+    tokenized_text = mt.tokenize(text)
+
+    return tokenized_text
