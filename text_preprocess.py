@@ -1,4 +1,5 @@
 import string
+import re
 
 from nltk import word_tokenize
 from nltk.corpus import stopwords
@@ -32,3 +33,10 @@ def tokenize_text(text):
     tokenized_text = mt.tokenize(text)
 
     return tokenized_text
+
+
+def remove_hyperlink(text):
+    http_remove = re.sub(r"http:\S+", "", text)
+    https_remove = re.sub(r"https:\S+", "", http_remove)
+
+    return https_remove
