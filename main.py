@@ -9,33 +9,42 @@ import text_features
 
 import pandas as pd
 
-n_sample = 100
+n_sample = 20
 
-def load_raw_data(folder_path):
+def load_raw_data(folder_path, lang):
     list_file = [join(folder_path, f) for f in listdir(folder_path) if isfile(join(folder_path, f))]
 
     data = []
 
-    for f in list_file[:100]:
+    for f in list_file[:n_sample]:
         data.extend(jsonl_parser.load_jsonl(f))
 
-    random.shuffle(data)
+    data_lang = [entry for entry in data if entry['lang'] == lang]
 
-    return data
+    random.shuffle(data_lang)
+
+    return data_lang
 
 
 def main():
     # data = load_raw_data(sys.argv[1])
-    data = load_raw_data('/Users/khoanguyen/Workspace/dataset/twitter-trending/TT-classification/dataset')
+    data = load_raw_data('/Users/khoanguyen/Workspace/dataset/twitter-trending/TT-classification/dataset', 'en')
     
     df = pd.DataFrame(data)
+
+    df['text'] = df['text'].apply(lambda x: text_preprocess.remove_hyperlink(x))
 
     # df['text'] = df['text'].apply(lambda x: text_preprocess.tokenize_text(x))
 
     # print(df.text.to_string(index=False))
 
-    text_features.generate_co_occurrences_matrix(df['text'])
+    text_features.generate_co_occurrences_matrix(df['text'], 1)
 
+    tf, features = text_features.generate_term_freq(df['text'], 2)
+
+    text_features.generate_tfidf(df['text'])
+
+    text_features.lda_model(tf, features)
     
 if __name__ == '__main__':
     main()
