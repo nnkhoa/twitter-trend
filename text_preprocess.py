@@ -38,5 +38,6 @@ def tokenize_text(text):
 def remove_hyperlink(text):
     http_remove = re.sub(r"http:\S+", "", text)
     https_remove = re.sub(r"https:\S+", "", http_remove)
+    www_remove = re.sub(r"www.\S+", "", https_remove)
 
-    return https_remove
+    return www_remove
