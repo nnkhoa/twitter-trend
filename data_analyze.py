@@ -3,7 +3,8 @@ import text_features
 
 def tweet_length_stats(master_data, trend_name=None):
     if trend_name is not None:
-        text_data = master_data.loc(master_data['id'] == trend_name)[['text']]
+        temp_data = master_data.loc[master_data['trend_hash'] == trend_name]
+        text_data = temp_data[['text']]
     else:
         text_data = master_data[['text']]
 
@@ -20,24 +21,28 @@ def tweet_length_stats(master_data, trend_name=None):
 
 def ngram_most_frequent(master_data, n_gram=1, trend_name=None):
     if trend_name is not None:
-        text_data = master_data.loc(master_data['id'] == trend_name)[['text']]
+        temp_data = master_data.loc[master_data['trend_hash'] == trend_name]
+        text_data = temp_data[['text']]
     else:
         text_data = master_data[['text']]
 
     tf_vector = CountVectorizer(ngram_range=(n_gram, n_gram),
                                 max_df=0.95,
                                 min_df=2, 
-                                stop_words='english').fit(text_data['text'])
+                                stop_words='english')
 
-    tf = tf_vector.transform(text_data['text'])
-
+    try:
+        tf = tf_vector.fit_transform(text_data['text'])
+    except ValueError:
+        return {'trend_name': trend_name, 'ngram_freq': None}
+    
     sum_ngram = tf.sum(axis=0)
 
     ngram_freq = [(word, sum_ngram[0, idx]) for word, idx in tf_vector.vocabulary_.items()]
 
     ngram_freq = sorted(ngram_freq, key=lambda x: x[1], reverse=True)
 
-    return ngram_freq
+    return {'trend_name': trend_name, 'ngram_freq': ngram_freq[:10]}
 
     # features = tf_vector.get_feature_names()
 

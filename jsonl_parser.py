@@ -1,5 +1,6 @@
 import json 
 import os
+import traceback
 
 def load_jsonl(input_file) -> list:
     data = []
@@ -7,7 +8,11 @@ def load_jsonl(input_file) -> list:
 
     with open(input_file, 'r', encoding='utf-8') as f:
         for line in f:
-            data.append(json.loads(line.rstrip('\n|\r')))
+            try:
+                data.append(json.loads(line.rstrip('\n|\r')))
+            except json.decoder.JSONDecodeError:
+               traceback.print_exc()
+               pass
     
     print('Loaded {} records from {}'.format(len(data), input_file))
 
