@@ -7,6 +7,7 @@ import jsonl_parser
 import text_preprocess
 import text_features
 import data_seperation
+import data_analyze
 
 import pandas as pd
 
@@ -51,17 +52,25 @@ def main():
     trend_label = text_features.trend_mapping(set(df_trend['trend_hash'].tolist()))
 
     df_trend['label'] = df_trend.apply(lambda row: trend_label[row.trend_hash], axis=1)
+
+    tweet_stats = data_analyze.tweet_length_stats(df)
+
+    print(tweet_stats)
+
+    ngram_freq = data_analyze.ngram_most_frequent(df)
+
+    print(ngram_freq[:10])
     # df['text'] = df['text'].apply(lambda x: text_preprocess.tokenize_text(x))
 
     # print(df.text.to_string(index=False))
 
     # text_features.generate_co_occurrences_matrix(df['text'], 1)
 
-    tf, features = text_features.generate_term_freq(df['text'], 1)
+    # tf, features = text_features.generate_term_freq(df['text'], 1)
 
     # text_features.generate_tfidf(df['text'])
 
-    text_features.lda_model(tf, features, 24)
+    # text_features.lda_model(tf, features, 24)
 
     # text_features.k_mean_clustering(df_trend)
     
