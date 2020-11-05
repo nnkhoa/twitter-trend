@@ -40,8 +40,9 @@ def ngram_most_frequent(master_data, n_gram=1, trend_name=None):
 
     tf_vector = CountVectorizer(ngram_range=(n_gram, n_gram),
                                 max_df=0.95,
-                                min_df=2, 
-                                stop_words='english')
+                                min_df=2,
+                                lowercase=False,
+                                stop_words=None)
 
     try:
         tf = tf_vector.fit_transform(text_data['text'])
@@ -76,17 +77,9 @@ def most_named_entity(master_data, trend_name=None):
 
     ner_list = list(itertools.chain(*ner_nested_list))
 
-    print(Counter(ner_list).most_common(10))
-    # print(len(doc.ents))
+    ner_list_text = list(itertools.chain([ner.text for ner in ner_list]))
 
-    # items = [x.text for x in doc.ents]
-
-    # print(Counter(items).most_common(10))
-
-    # labels = [x.label_ for x in doc.ents]
-
-    # print(Counter(labels).most_common(10))
-
+    print(Counter(ner_list_text).most_common(10))
 
 
 
