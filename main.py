@@ -3,6 +3,7 @@ from os.path import isfile, join
 import sys 
 import random
 import json
+import csv
 
 import jsonl_parser
 import text_preprocess
@@ -14,18 +15,16 @@ import pandas as pd
 
 
 def load_raw_data(folder_path, trend_list, lang):
-    # all_file = [join(folder_path, f) for f in listdir(folder_path) if isfile(join(folder_path, f))]
     n_sample = 1036
+
     if trend_list:
         list_file = [join(folder_path, f + ".jsonl") for f in trend_list if isfile(join(folder_path, f +  ".jsonl"))]
         if n_sample > len(trend_list):
             n_sample = len(trend_list)
     else:
         list_file = [join(folder_path, f) for f in listdir(folder_path) if isfile(join(folder_path, f))]
+    
     data = []
-
-    # if n_sample > len(trend_list):
-    #     n_sample = len(trend_list)
 
     for f in list_file[:n_sample]:
         print(f)
@@ -39,15 +38,13 @@ def load_raw_data(folder_path, trend_list, lang):
 
 
 def main():
-    # data = load_raw_data(sys.argv[1])
     annotated = data_seperation.get_data('news')
 
     trend_list = annotated['id'].tolist()
 
-    workstation_data_path = 'C:\\Users\\nnguyen\\Documents\\Twitter\\dataset'
-    macbook_data_path = '/Users/khoanguyen/Workspace/dataset/twitter-trending/TT-classification/dataset/'
+    data_path='dataset/'
     
-    data = load_raw_data(workstation_data_path, None, 'en')
+    data = load_raw_data(data_path, trend_list, 'en')
     
     df = pd.DataFrame(data)
 
@@ -61,19 +58,30 @@ def main():
 
     df_trend['label'] = df_trend.apply(lambda row: trend_label[row.trend_hash], axis=1)
 
-    tweet_stats = []
-    for trend_name in trend_list:
-        tweet_stats.append(data_analyze.tweet_length_stats(df, trend_name))
+    # tweet_stats = []
+    # for trend_name in trend_list:
+    #     tweet_stats.append(data_analyze.tweet_length_stats(df, trend_name))
 
-    with open('tweet_stats.json', 'w+') as fout:
-        json.dump(tweet_stats, fout)
+    # with open('tweet_stats.csv', 'w+') as fout:
+    #     writer = csv.DictWriter(fout, fieldnames=['trend_name', 'max_length', 'min_length', 'avg_length'])
+    #     writer.writeheader()
+    #     for data in tweet_stats:
+    #         writer.writerow(data)
 
-    ngram_freq = []
-    for trend_name in trend_list:
-        ngram_freq.append(data_analyze.ngram_most_frequent(df, trend_name=trend_name))
+    print(data_analyze.tweet_length_stats(df))
 
-    with open('ngram_freq.json', 'w+') as fout:
-        json.dump(ngram_freq, fout)
+    # ngram_freq = []
+    # for trend_name in trend_list:
+    #     ngram_freq.append(data_analyze.ngram_most_frequent(df, trend_name=trend_name))
+
+    # with open('ngram_freq.json', 'w+') as fout:
+    #     json.dump(ngram_freq, fout, indent=1)
+
+    print(data_analyze.ngram_most_frequent(df))
+
+    print(data_analyze.ngram_most_frequent(df, n_gram=2))
+
+    # data_analyze.most_named_entity(df)
 
     # ngram_freq = data_analyze.ngram_most_frequent(df)
 
