@@ -130,6 +130,7 @@ dmypy.json
 
 # Dataset
 dataset/
+dataset-full/
 TT-annotations.csv
 
 # Result file
