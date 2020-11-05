@@ -2,7 +2,7 @@ import json
 import os
 import traceback
 
-def load_jsonl(input_file) -> list:
+def load_jsonl(input_file, verbose) -> list:
     data = []
     wanted_keys = ['created_at', 'id_str', 'text', 'lang', 'trend_hash']
 
@@ -14,7 +14,8 @@ def load_jsonl(input_file) -> list:
                traceback.print_exc()
                pass
     
-    print('Loaded {} records from {}'.format(len(data), input_file))
+    if verbose == True:
+        print('Loaded {} records from {}'.format(len(data), input_file))
 
     trend_hash = os.path.splitext(os.path.basename(input_file))[0]
     

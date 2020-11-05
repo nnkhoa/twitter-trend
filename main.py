@@ -14,7 +14,7 @@ import data_analyze
 import pandas as pd
 
 
-def load_raw_data(folder_path, trend_list, lang):
+def load_raw_data(folder_path, trend_list, lang, verbose):
     n_sample = 1036
 
     if trend_list:
@@ -27,8 +27,7 @@ def load_raw_data(folder_path, trend_list, lang):
     data = []
 
     for f in list_file[:n_sample]:
-        print(f)
-        data.extend(jsonl_parser.load_jsonl(f))
+        data.extend(jsonl_parser.load_jsonl(f, verbose))
 
     print() 
 
@@ -38,13 +37,15 @@ def load_raw_data(folder_path, trend_list, lang):
 
 
 def main():
+    verbose = False
+
     annotated = data_seperation.get_data('news')
 
     trend_list = annotated['id'].tolist()
 
     data_path='dataset/'
     
-    data = load_raw_data(data_path, trend_list, 'en')
+    data = load_raw_data(data_path, trend_list, 'en', verbose)
     
     df = pd.DataFrame(data)
 
@@ -68,7 +69,7 @@ def main():
     #     for data in tweet_stats:
     #         writer.writerow(data)
 
-    print(data_analyze.tweet_length_stats(df))
+    # print(data_analyze.tweet_length_stats(df))
 
     # ngram_freq = []
     # for trend_name in trend_list:
@@ -77,11 +78,11 @@ def main():
     # with open('ngram_freq.json', 'w+') as fout:
     #     json.dump(ngram_freq, fout, indent=1)
 
-    print(data_analyze.ngram_most_frequent(df))
+    # print(data_analyze.ngram_most_frequent(df))
 
-    print(data_analyze.ngram_most_frequent(df, n_gram=2))
+    # print(data_analyze.ngram_most_frequent(df, n_gram=2))
 
-    # data_analyze.most_named_entity(df)
+    data_analyze.most_named_entity(df)
 
     # ngram_freq = data_analyze.ngram_most_frequent(df)
 
