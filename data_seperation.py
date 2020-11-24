@@ -5,7 +5,7 @@ from os.path import isfile, join, splitext
 
 def get_data(trend_type):
     annotation_path='TT-annotations.csv'
-    data_path='dataset/'
+    data_path='dataset-full/'
 
     annotation_df = pd.read_csv(annotation_path, delimiter=';', names=['id', 'time', 'name', 'type'])
     
