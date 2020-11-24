@@ -1,6 +1,12 @@
 from sklearn.feature_extraction.text import CountVectorizer
 import spacy
 import en_core_web_sm 
+import pandas as pd 
+import numpy as np
+
+import matplotlib
+matplotlib.use('TkAgg')
+from matplotlib import pyplot as plt
 
 import text_features
 
@@ -31,7 +37,7 @@ def tweet_length_stats(master_data, trend_name=None):
     return {"trend_name": trend_name, "max_length": max_length, "min_length": min_length, "avg_length": avg_length}
 
 
-def ngram_most_frequent(master_data, n_gram=1, trend_name=None):
+def ngram_most_frequent(master_data, n_gram=1, trend_name=None, plot=False):
     if trend_name is not None:
         temp_data = master_data.loc[master_data['trend_hash'] == trend_name]
         text_data = temp_data[['text']]
@@ -42,7 +48,8 @@ def ngram_most_frequent(master_data, n_gram=1, trend_name=None):
                                 max_df=0.95,
                                 min_df=2,
                                 lowercase=False,
-                                stop_words=None)
+                                # token_pattern=r'\S+',
+                                stop_words='english')
 
     try:
         tf = tf_vector.fit_transform(text_data['text'])
@@ -51,18 +58,41 @@ def ngram_most_frequent(master_data, n_gram=1, trend_name=None):
     
     sum_ngram = tf.sum(axis=0)
 
-    ngram_freq = [{'word': word, 'count': sum_ngram[0, idx].item()} for word, idx in tf_vector.vocabulary_.items()]
+    ngram_freq = {tuple(word.split(' ')) : sum_ngram[0, idx].item() for word, idx in tf_vector.vocabulary_.items()}
 
-    ngram_freq = sorted(ngram_freq, key=lambda x: x['count'], reverse=True)
+    ngram_freq = {k: v for k,v in sorted(ngram_freq.items(), key= lambda x: x[1], reverse=True)}
 
-    return {'trend_name': trend_name, 'ngram_freq': ngram_freq[:10]}
+    top_10 = dict(Counter(ngram_freq).most_common(10))
+
+    if plot == True:    
+        key = top_10.keys()
+        counts = list(top_10.values())
+        key_string = list(map(lambda x: ' '.join(x), key))
+        y_pos = np.arange(len(key_string))
+
+        fig,ax = plt.subplots()
+        
+        ax.barh(y_pos, counts)
+        ax.set_yticks(y_pos)
+        ax.set_yticklabels(key_string)
+        ax.invert_yaxis()
+        ax.set_xlabel('# of mentions')
+        ax.set_title(str(n_gram) + '-gram Frequencies')
+
+        for i,v in enumerate(counts):
+            ax.text(v + 3, i + .25, str(v), fontweight='bold', fontsize=8)
+        
+        plt.tight_layout()
+        plt.show()
+        
+    return {'trend_name': trend_name, 'ngram_freq': Counter(ngram_freq).most_common(10)}
 
     # features = tf_vector.get_feature_names()
 
     # text_features.print_top_word(tf, features, 10)
 
 
-def most_named_entity(master_data, trend_name=None):
+def most_named_entity(master_data, trend_name=None, plot=False):
     if trend_name is not None:
         temp_data = master_data.loc[master_data['trend_hash'] == trend_name]
         text_data = temp_data[['text']]
@@ -79,8 +109,31 @@ def most_named_entity(master_data, trend_name=None):
 
     ner_list_text = list(itertools.chain([ner.text for ner in ner_list]))
 
-    print(Counter(ner_list_text).most_common(10))
+    top = Counter(ner_list_text).most_common(20)
 
+    print(top)
+
+    if plot == True:    
+        ne = [x[0] for x in top]
+        counts = [x[1] for x in top]
+        y_pos = np.arange(len(ne))
+
+        fig,ax = plt.subplots()
+        
+        ax.barh(y_pos, counts)
+        ax.set_yticks(y_pos)
+        ax.set_yticklabels(ne)
+        ax.invert_yaxis()
+        ax.set_xlabel('# of mentions')
+        ax.set_title('Named Entity Frequencies')
+
+        for i,v in enumerate(counts):
+            ax.text(v + 3, i + .25, str(v), fontweight='bold', fontsize=8)
+        
+        plt.tight_layout()
+        plt.show()
+
+    return pd.DataFrame(top, columns=['NE', 'Count'])
 
 
 
