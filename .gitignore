@@ -134,6 +134,9 @@ dataset-full/
 TT-annotations.csv
 
 # Result file
+tmp
+results/
+plot/
 *.json
 *.csv
 *.xls
