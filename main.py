@@ -10,6 +10,7 @@ import text_preprocess
 import text_features
 import data_seperation
 import data_analyze
+import tools
 
 import pandas as pd
 
@@ -43,9 +44,9 @@ def main():
 
     trend_list = annotated['id'].tolist()
 
-    data_path='dataset/'
+    data_path='dataset-full/'
     
-    data = load_raw_data(data_path, trend_list, 'en', verbose)
+    data = load_raw_data(data_path, None, 'en', verbose)
     
     df = pd.DataFrame(data)
 
@@ -73,16 +74,19 @@ def main():
 
     # ngram_freq = []
     # for trend_name in trend_list:
-    #     ngram_freq.append(data_analyze.ngram_most_frequent(df, trend_name=trend_name))
+    #     ngram_freq.append(data_analyze.ngram_most_frequent(df, trend_name=trend_name, n_gram=2))
 
     # with open('ngram_freq.json', 'w+') as fout:
     #     json.dump(ngram_freq, fout, indent=1)
 
     # print(data_analyze.ngram_most_frequent(df))
 
-    # print(data_analyze.ngram_most_frequent(df, n_gram=2))
+    # print(data_analyze.ngram_most_frequent(df, n_gram=2, plot=True))
 
-    data_analyze.most_named_entity(df)
+    # for trend_name in trend_list:
+    #     tools.save_as_pickle(data_analyze.most_named_entity(df, trend_name), "results/" + trend_name, dump=0)
+
+    data_analyze.most_named_entity(df, plot=True)
 
     # ngram_freq = data_analyze.ngram_most_frequent(df)
 
