@@ -129,6 +129,7 @@ dmypy.json
 .pyre/
 
 # Dataset
+.data/
 dataset/
 dataset-full/
 TT-annotations.csv
@@ -140,3 +141,6 @@ plot/
 *.json
 *.csv
 *.xls
+
+#demo file
+pytorch_demo.ipynb
